@@ -36,7 +36,9 @@ setup(
     description="Python utilities for inventorying and assessing AWS costs.",
     entry_points={
         'console_scripts': [
-            'aurora=aurora.cli:main',
+            's3_info=aurora.s3_info:main',
+            'ec2_info=aurora.ec2_info:main',
+            'ebs_info=aurora.ebs_info:main'
         ],
     },
     install_requires=requirements,

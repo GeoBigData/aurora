@@ -9,11 +9,11 @@ import numpy as np
 import botocore
 
 @click.command()
-@click.argument('in_region')
 @click.argument('out_csv')
+@click.option('--in_region', '-r', type=str, default='all')
 @click.option('--days', '-d', type=int, default=4)
 @click.option('--agg', '-a', type=str, default='min')
-def main(in_region, out_csv, days=4, agg='min'):
+def main(out_csv, in_region='all', days=4, agg='min'):
 
     allowable_agg_vals = ['min', 'max', 'mean']
     if agg.lower() == 'min':
@@ -127,7 +127,12 @@ def main(in_region, out_csv, days=4, agg='min'):
                                 region_name=region_name,
                                 volume_type=volume_type
                         )
-                        price_per_gb = s3_price_lkup_df.query(query_string)['price_per_gb'].tolist()[0]
+                        try:
+                            price_per_gb = s3_price_lkup_df.query(query_string)['price_per_gb'].tolist()[0]
+                        except IndexError:
+                            print("Warning: could not determine price_per_gb for bucket {}".format(bucket_name))
+                            print("Cause: could be a bad query -- {}".format(query_string))
+                            price_per_gb = np.nan
                     else:
                         price_per_gb = np.nan
 
